@@ -3,6 +3,8 @@
 This project is a tiny userspace binary that allows you to configure the RGB
 Fusion keyboard of the Gigabyte AERO 15X using libusb.
 
+You can switch between the built-in presets, and upload custom configurations!
+
 The initial protocol reverse-engineering was done by martin31821. This repo
 builds on top of his initial [fusion-kbd-controller](https://github.com/martin31821/fusion-kbd-controller)
 project.
@@ -20,7 +22,11 @@ make
 
 ## Usage
 
-TODO
+Flag handling isn't too robust yet, but you can get an idea of usage by just
+running `fusion_kbd` on it's own, and reading the usage.
+
+cfg files are currently raw binary corresponding to the USB payload sent to the
+keyboard. I'll get a more user-friendly parser working soon hopefully.
 
 Root privileges are required, since the tool has to temporarily unbinds the USB
 device from the kernel module.
@@ -31,6 +37,8 @@ It seems to work, but more testing and functionality work is required.
 
 ## Disclaimer
 
-It's possible to brick your keyboard when sending bogus values here.
-You should be safe when using the high level `set_mode` and `set_custom_mode`
-functions.
+It's possible to brick your keyboard when sending bogus values over the wire!
+While it seems to work fine for me, use this softawre at your own risk!
+
+(that said, a "bricked" keyboard can usually be fixed with a reboot. Unless you
+really mess it up, in which case, gg)

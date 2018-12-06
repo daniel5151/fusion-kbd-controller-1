@@ -20,41 +20,41 @@
 
 #pragma once
 
-#include <libusb-1.0/libusb.h>
 #include <stdint.h>
+
+#include <libusb-1.0/libusb.h>
 
 // This is the list of predefined modes.
 // For custom config, this byte describes the config slot
-typedef enum {
-  MODE_STATIC = 0x00,
-  MODE_BREATHING,
-  MODE_WAVE,
-  MODE_FADE_ON_KEYPRESS,
-  MODE_MARQUEE,
-  MODE_RIPPLE,
-  MODE_FLASH_ON_KEYPRESS,
-  MODE_NEON,
-  MODE_RAINBOW_MARQUEE,
-  MODE_RAINDROP,
-  MODE_CIRCLE_MARQUEE,
-  MODE_HEDGE,
-  MODE_ROTATE,
-} Mode;
+#define PRESET_STATIC            0x01
+#define PRESET_BREATHING         0x02
+#define PRESET_WAVE              0x03
+#define PRESET_FADE_ON_KEYPRESS  0x04
+#define PRESET_MARQUEE           0x05
+#define PRESET_RIPPLE            0x06
+#define PRESET_FLASH_ON_KEYPRESS 0x07
+#define PRESET_NEON              0x08
+#define PRESET_RAINBOW_MARQUEE   0x09
+#define PRESET_RAINDROP          0x0a
+#define PRESET_CIRCLE_MARQUEE    0x0b
+#define PRESET_HEDGE             0x0c
+#define PRESET_ROTATE            0x0d
 
-typedef enum {
-  COLOR_RED = 0x01,
-  COLOR_GREEN,
-  COLOR_YELLOW,
-  COLOR_BLUE,
-  COLOR_PURPLE,
-  COLOR_AQUA,
-  COLOR_WHITE,
-} Color;
+#define COLOR_RAND   0x00
+#define COLOR_RED    0x01
+#define COLOR_GREEN  0x02
+#define COLOR_YELLOW 0x03
+#define COLOR_BLUE   0x04
+#define COLOR_ORANGE 0x05
+#define COLOR_PURPLE 0x06
+#define COLOR_WHITE  0x07
 
 int set_mode(libusb_device_handle* handle,
-             Mode mode,
-             Color color,
+             uint8_t mode,
+             uint8_t color,
              uint8_t brightness,
              uint8_t speed);
 
-int set_custom_mode(libusb_device_handle* handle, uint8_t* data);
+int set_custom_mode(libusb_device_handle* handle,
+                    uint8_t* data,
+                    uint8_t brightness);

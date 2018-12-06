@@ -22,6 +22,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 # Setup compiler flags for different platforms
+set(C_STANDARD 11)
 if (${CMAKE_C_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
   set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -g")
@@ -45,8 +46,6 @@ find_path(LIBUSB_INCLUDE_DIR
 find_library(LIBUSB_LIBRARY
   NAMES usb-1.0 usb
   PATH_SUFFIXES "lib" "lib32" "lib64")
-
-message(${LIBUSB_LIBRARY})
 
 include_directories(${LIBUSB_INCLUDE_DIR})
 target_link_libraries(fusion_kbd_controller
