@@ -1,0 +1,1 @@
+gcc -o list_usb list_usb.c $(pkg-config --libs --cflags libusb-1.0)

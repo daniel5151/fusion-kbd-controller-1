@@ -1,32 +1,40 @@
 #include <stdio.h>
 
 #include <assert.h>
-#include <string.h>
 #include <errno.h>
-#include <unistd.h>
 #include <libusb-1.0/libusb.h>
+#include <string.h>
+#include <unistd.h>
 
-#include "enums.h"
-#include "data.c"
+#include "set_modes.h"
 
-int main(int argc, char **argv) {
+#define KBD_VID 0x1044
+#define KBD_PID 0x7a39
+
+int main(int argc, char** argv) {
   if (argc < 2) {
-    printf("Usage: %s mode modeparams...\n", argv[0]);
+    printf("Usage: %s mode [modeparams]...\n", argv[0]);
     return -1;
   }
 
-  libusb_context *ctx = NULL;
+  // set-up libusb
 
-  int r = libusb_init(&ctx);
+  libusb_context* ctx = NULL;
+
+  int err_libusb = 0;
   int exitcode = 0;
-  if (r < 0) {
-    printf("libusb_init error %d\n", r);
+
+  err_libusb = libusb_init(&ctx);
+  if (err_libusb < 0) {
+    printf("libusb_init error %d\n", err_libusb);
     return 1;
   }
-  libusb_device_handle *handle = NULL;
-  handle = libusb_open_device_with_vid_pid(ctx, 0x1044, 0x7a39);
+
+  libusb_device_handle* handle = NULL;
+  handle = libusb_open_device_with_vid_pid(ctx, KBD_VID, KBD_PID);
   if (handle == NULL) {
     printf("Failed to open device!\n");
+    printf("Are you running as root?\n");
     libusb_exit(ctx);
     return 1;
   }
@@ -39,19 +47,24 @@ int main(int argc, char **argv) {
     goto exit;
   }
 
-  r = libusb_claim_interface(handle, 0);
-  if (r < 0) {
-    printf("Failed to claim ctrl interface! %d\n", r);
+  err_libusb = libusb_claim_interface(handle, 0);
+  if (err_libusb < 0) {
+    printf("Failed to claim ctrl interface! %d\n", err_libusb);
     exitcode = 4;
     goto exit;
   }
-  r = libusb_claim_interface(handle, 3);
-  if (r < 0) {
-    printf("Failed to claim interface! %d\n", r);
+  err_libusb = libusb_claim_interface(handle, 3);
+  if (err_libusb < 0) {
+    printf("Failed to claim interface! %d\n", err_libusb);
     exitcode = 2;
     goto exit;
   }
 
+  // great! we have a proper libusb handle to the keyboard!
+
+  // TODO: add cli support for built-in modes
+
+  // arg-parsing
   char* mode = argv[1];
   if (strcmp(mode, "custom") == 0) {
     if (argc < 3) {
@@ -60,17 +73,22 @@ int main(int argc, char **argv) {
       goto exit;
     }
     // Custom mode
-    FILE *fd = fopen(argv[2], "rb");
+    FILE* fd = fopen(argv[2], "rb");
     if (!fd) {
       printf("fopen(%s) failed: %s\n", argv[2], strerror(errno));
       exitcode = -1;
       goto exit;
     }
-    fread(m_white_data, 512, 1, fd);
+
+    // see data.inc for data-format
+    #include "data.inc" // uint8_t m_blank_data[512];
+
+    size_t result = fread(m_blank_data, 512, 1, fd);
+    (void) result;
     fclose(fd);
 
-    r = set_custom_mode(handle, m_white_data);
-    if (r < 0) {
+    err_libusb = set_custom_mode(handle, m_blank_data);
+    if (err_libusb < 0) {
       printf("Failed to set custom mode!\n");
       exitcode = -1;
       goto exit;
