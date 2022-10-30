@@ -1,5 +1,7 @@
 # fusion-kbd-controller
 
+**This version is no longer maintained - please use [fusion-kbd-controller-rs](https://github.com/daniel5151/fusion-kbd-controller-rs) instead!**
+
 This project is a tiny userspace binary that allows you to configure the RGB
 Fusion keyboard of the Gigabyte AERO 15X using libusb.
 
